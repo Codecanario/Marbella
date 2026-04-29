@@ -1144,6 +1144,32 @@ body {
     background-attachment: scroll;
   }
 
+  /* ── RENDIMIENTO: reducir animaciones pesadas en móvil ── */
+  .plague-particle {
+    animation-duration: 15s !important;
+    filter: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Reducir partículas visibles */
+  .particle { display: none; }
+
+  /* Niebla más ligera */
+  .fog-layer {
+    filter: blur(8px) !important;
+    border-radius: 0;
+  }
+
+  /* Quitar animación de entrada del login */
+  .login-container { animation: none !important; }
+
+  /* GPU acceleration en inputs */
+  .game-input {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-tap-highlight-color: transparent;
+  }
+
   /* Pantalla login: sin scroll, todo cabe en pantalla */
   #login-screen {
     align-items: center;
@@ -1151,10 +1177,9 @@ body {
     padding: 0;
     overflow: hidden;
     height: 100vh;
-    height: 100dvh; /* dynamic viewport height para móviles */
+    height: 100dvh;
   }
 
-  /* Título arriba con margen */
   .game-title {
     font-size: 1.4rem;
     letter-spacing: 0.08em;
@@ -1170,9 +1195,9 @@ body {
   .skull-icon {
     font-size: 2rem;
     margin-bottom: 0.3rem;
+    animation: none !important; /* quitar pulso en móvil */
   }
 
-  /* Caja login: compacta y centrada */
   .login-container {
     width: 88%;
     max-width: 340px;
@@ -1181,7 +1206,7 @@ body {
     border-radius: 12px;
   }
 
-  /* Inputs sin zoom en iOS */
+  /* font-size 1rem evita zoom automático en iOS */
   .game-input {
     padding: 0.7rem 0.9rem;
     font-size: 1rem;
@@ -1201,13 +1226,10 @@ body {
     gap: 0.4rem;
   }
 
-  /* Niebla: igual que en web, solo en la parte inferior */
   #fog-container {
     height: 180px;
     border-radius: 0;
   }
 
-  .fog-layer {
-    border-radius: 0;
-  }
+  .fog-layer { border-radius: 0; }
 }

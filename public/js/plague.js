@@ -32,9 +32,10 @@ function createParticle() {
     }, duration * 1000);
 }
 
-// Generador continuo: 3 partículas cada 800ms
+// Generador continuo: menos partículas en móvil para mejor rendimiento
+const isMobile = window.innerWidth <= 480;
 setInterval(() => {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < (isMobile ? 1 : 3); i++) {
         createParticle();
     }
-}, 800);
+}, isMobile ? 2000 : 800);
