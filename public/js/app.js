@@ -204,13 +204,13 @@ async function loadFeed() {
       return;
     }
     container.innerHTML = items.slice(0, 12).map(item => `
-      <div class="feed-card" onclick="viewMedia(${JSON.stringify(item).replace(/"/g,'&quot;')})">
+      <div class="feed-card" data-item="${escHtml(JSON.stringify(item))}" onclick="viewMediaFromData(this)">
         ${item.type === 'video'
           ? `<video class="feed-thumb" src="${item.path}" muted></video>`
-          : `<img src="${item.path}" alt="${item.caption || ''}" loading="lazy"/>`
+          : `<img src="${item.path}" alt="${escHtml(item.caption || '')}" loading="lazy"/>`
         }
         <div class="feed-card-info">
-          <div class="feed-card-user">⚔ ${item.username}</div>
+          <div class="feed-card-user">⚔ ${escHtml(item.username)}</div>
           ${item.caption ? `<div class="feed-card-caption">${escHtml(item.caption)}</div>` : ''}
           <div class="feed-card-date">${formatDate(item.date)}</div>
         </div>
@@ -396,11 +396,12 @@ function buildMediaCard(item) {
     ? `<video class="media-thumb-video" src="${item.path}" muted preload="metadata"></video>`
     : `<img class="media-thumb" src="${item.path}" alt="${escHtml(item.caption || '')}" loading="lazy"/>`;
   const icon = item.type === 'video' ? '▶' : '🔍';
+  const dataItem = escHtml(JSON.stringify(item));
   return `
     <div class="media-card">
       <div style="position:relative">
         ${media}
-        <div class="media-overlay" onclick='viewMedia(${JSON.stringify(item).replace(/'/g,"&#39;")})'>${icon}</div>
+        <div class="media-overlay" data-item="${dataItem}" onclick="viewMediaFromEl(this)">${icon}</div>
       </div>
       <div class="media-info">
         <div class="media-info-left">
@@ -408,10 +409,22 @@ function buildMediaCard(item) {
           ${item.caption ? `<div class="media-caption">${escHtml(item.caption)}</div>` : ''}
           <div class="media-date">${formatDate(item.date)}</div>
         </div>
-        ${isOwner ? `<button class="btn-delete-media" onclick="deleteMedia(${item.id})" title="Eliminar">🗑</button>` : ''}
+        ${isOwner ? `<button class="btn-delete-media" onclick="deleteMedia('${item.id}')" title="Eliminar">🗑</button>` : ''}
       </div>
     </div>
   `;
+}
+
+function viewMediaFromEl(el) {
+  const raw  = el.getAttribute('data-item');
+  const item = JSON.parse(raw.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&'));
+  viewMedia(item);
+}
+
+function viewMediaFromData(el) {
+  const raw  = el.getAttribute('data-item');
+  const item = JSON.parse(raw.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&'));
+  viewMedia(item);
 }
 
 function viewMedia(item) {
