@@ -17,10 +17,11 @@ const PORT = process.env.PORT || 3000;
 
 // ─── Cloudinary config ────────────────────────────────────────────────────────
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key:    process.env.CLOUDINARY_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET
+  cloud_name: process.env.CLOUDINARY_NAME || 'dn6mp7j6s',
+  api_key:    process.env.CLOUDINARY_KEY  || '261268732891214',
+  api_secret: process.env.CLOUDINARY_SECRET || 'f4NfEUwA1qKz64_Pe620gVHn7sw'
 });
+console.log('☁️ Cloudinary cloud:', process.env.CLOUDINARY_NAME || 'dn6mp7j6s');
 
 // ─── MongoDB ──────────────────────────────────────────────────────────────────
 const MONGO_URI = process.env.MONGO_URI;
