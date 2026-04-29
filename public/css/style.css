@@ -1170,14 +1170,27 @@ body {
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Pantalla login: sin scroll, todo cabe en pantalla */
+  /* Pantalla login: centrado real en móvil */
   #login-screen {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 0;
     overflow: hidden;
     height: 100vh;
     height: 100dvh;
+  }
+
+  .login-container {
+    width: 88%;
+    max-width: 340px;
+    padding: 1.25rem 1.1rem;
+    margin: 0 auto;
+    border-radius: 12px;
+    animation: none !important;
+    transform: none !important;
+    position: static !important;
   }
 
   .skull-icon {
