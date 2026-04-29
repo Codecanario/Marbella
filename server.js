@@ -1,21 +1,25 @@
 /**
  * server.js - Backend Marbella GDKP
- * Usa Express + express-session + MongoDB Atlas (datos permanentes)
+ * Express + MongoDB Atlas + Cloudinary (archivos permanentes)
  */
 
-const express  = require('express');
-const session  = require('express-session');
-const multer   = require('multer');
-const fs       = require('fs');
-const path     = require('path');
+const express    = require('express');
+const session    = require('express-session');
+const multer     = require('multer');
+const fs         = require('fs');
+const path       = require('path');
 const { MongoClient, ObjectId } = require('mongodb');
+const cloudinary = require('cloudinary').v2;
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// ─── Crear carpeta uploads si no existe ──────────────────────────────────────
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+// ─── Cloudinary config ────────────────────────────────────────────────────────
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key:    process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET
+});
 
 // ─── MongoDB ──────────────────────────────────────────────────────────────────
 const MONGO_URI = process.env.MONGO_URI;
@@ -28,17 +32,9 @@ async function connectDB() {
   console.log('✅ Conectado a MongoDB Atlas');
 }
 
-// ─── Multer ───────────────────────────────────────────────────────────────────
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-  filename:    (req, file, cb) => {
-    const ext  = path.extname(file.originalname);
-    const name = Date.now() + '-' + Math.round(Math.random() * 1e9) + ext;
-    cb(null, name);
-  }
-});
+// ─── Multer (temporal en memoria para subir a Cloudinary) ─────────────────────
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = /jpeg|jpg|png|gif|webp|mp4|webm|mov/;
@@ -50,7 +46,6 @@ const upload = multer({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(UPLOADS_DIR));
 app.use(session({
   secret: 'marbella-gdkp-secret-666',
   resave: false,
@@ -62,6 +57,22 @@ const requireAuth = (req, res, next) => {
   if (req.session && req.session.user) return next();
   res.status(401).json({ error: 'No autenticado' });
 };
+
+// ─── Helper: subir buffer a Cloudinary ───────────────────────────────────────
+function uploadToCloudinary(buffer, filename, isVideo) {
+  return new Promise((resolve, reject) => {
+    const options = {
+      resource_type: isVideo ? 'video' : 'image',
+      folder: 'marbella-gdkp',
+      public_id: Date.now() + '-' + Math.round(Math.random() * 1e9)
+    };
+    const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+    stream.end(buffer);
+  });
+}
 
 // ══════════════════════════════════════════════════════════════════════════════
 // AUTH
@@ -156,7 +167,7 @@ app.post('/api/raids/:id/leave', requireAuth, async (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
-// MEDIA
+// MEDIA — con Cloudinary
 // ══════════════════════════════════════════════════════════════════════════════
 
 app.get('/api/media', requireAuth, async (req, res) => {
@@ -166,22 +177,42 @@ app.get('/api/media', requireAuth, async (req, res) => {
 
 app.post('/api/media/upload', requireAuth, upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No se subió archivo' });
-  const isVideo = /mp4|webm|mov/.test(path.extname(req.file.originalname).toLowerCase().replace('.', ''));
-  const newMedia = {
-    username: req.session.user.username, type: isVideo ? 'video' : 'image',
-    filename: req.file.filename, path: '/uploads/' + req.file.filename,
-    caption: req.body.caption || '', date: new Date()
-  };
-  const result = await db.collection('media').insertOne(newMedia);
-  res.json({ ...newMedia, id: result.insertedId.toString() });
+
+  try {
+    const ext     = path.extname(req.file.originalname).toLowerCase().replace('.', '');
+    const isVideo = /mp4|webm|mov/.test(ext);
+
+    // Subir a Cloudinary
+    const result = await uploadToCloudinary(req.file.buffer, req.file.originalname, isVideo);
+
+    const newMedia = {
+      username:    req.session.user.username,
+      type:        isVideo ? 'video' : 'image',
+      path:        result.secure_url,
+      cloudinary_id: result.public_id,
+      caption:     req.body.caption || '',
+      date:        new Date()
+    };
+
+    const inserted = await db.collection('media').insertOne(newMedia);
+    res.json({ ...newMedia, id: inserted.insertedId.toString() });
+  } catch (err) {
+    console.error('Error subiendo a Cloudinary:', err);
+    res.status(500).json({ error: 'Error al subir el archivo' });
+  }
 });
 
 app.delete('/api/media/:id', requireAuth, async (req, res) => {
   const media = await db.collection('media').findOne({ _id: new ObjectId(req.params.id) });
   if (!media) return res.status(404).json({ error: 'No encontrado' });
   if (media.username !== req.session.user.username) return res.status(403).json({ error: 'Sin permiso' });
-  const filePath = path.join(UPLOADS_DIR, media.filename);
-  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+  // Borrar de Cloudinary
+  if (media.cloudinary_id) {
+    const resourceType = media.type === 'video' ? 'video' : 'image';
+    await cloudinary.uploader.destroy(media.cloudinary_id, { resource_type: resourceType });
+  }
+
   await db.collection('media').deleteOne({ _id: new ObjectId(req.params.id) });
   res.json({ ok: true });
 });
