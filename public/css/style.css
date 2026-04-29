@@ -531,6 +531,40 @@ body {
   font-size: 1.1rem;
 }
 
+/* ─── VER MÁS ────────────────────────────────────────────────── */
+.feed-ver-mas {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* ─── FEED RAIDS (inicio) ────────────────────────────────────── */
+.feed-raids-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.feed-raid-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  transition: all 0.3s;
+}
+.feed-raid-card:hover { box-shadow: 0 0 15px rgba(201,168,76,0.15); }
+.feed-raid-title {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold-bright);
+  margin-bottom: 0.4rem;
+}
+.feed-raid-meta { font-size: 0.78rem; color: var(--purple-main); margin-bottom: 0.25rem; }
+.feed-raid-by   { font-size: 0.75rem; color: var(--green-nec); font-family: var(--font-ui); margin-bottom: 0.25rem; }
+.feed-raid-desc { font-size: 0.82rem; color: var(--text-dim); font-style: italic; }
+
 /* ═══════════════════════════════════════════════════════════════
    RAIDS
    ═══════════════════════════════════════════════════════════════ */
@@ -903,16 +937,39 @@ body {
     background-position: 55% center;
   }
 
-  /* ── LOGIN SCREEN MÓVIL ── */
   #login-screen {
     align-items: center;
     justify-content: center;
   }
 
+  /* Sin caja — transparente, todo junto en el centro */
   .login-container {
-    width: 90%;
-    max-width: 400px;
-    margin: 0 auto;
+    width: 88% !important;
+    max-width: 380px !important;
+    margin: 0 auto !important;
+    padding: 1.5rem 1.25rem !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    animation: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0 !important;
+  }
+
+  .login-logo {
+    width: 220px !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .login-form-zone {
+    width: 100%;
+  }
+
+  .auth-form {
+    gap: 0.75rem;
   }
 
   .game-input {
@@ -998,11 +1055,33 @@ body {
   .section-title { font-size: 1rem; }
 
   /* Grids — columna única */
-  .feed-grid,
   .raids-grid,
   .media-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+
+  /* Feed inicio — cuadrícula 2x2 en móvil */
+  .feed-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .feed-card img, .feed-card video {
+    height: 140px;
+  }
+
+  .feed-card-info {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .feed-card-user   { font-size: 0.68rem; }
+  .feed-card-caption { display: none; }
+  .feed-card-date   { font-size: 0.62rem; }
+
+  /* Feed raids en móvil */
+  .feed-raids-grid {
+    grid-template-columns: 1fr;
   }
 
   /* Cards más compactas */

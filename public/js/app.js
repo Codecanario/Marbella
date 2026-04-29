@@ -192,32 +192,69 @@ async function doLogout() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // FEED (INICIO)
 // ═══════════════════════════════════════════════════════════════════════════════
+let allFeedItems = [];
+
 async function loadFeed() {
   const container = document.getElementById('feed-container');
   container.innerHTML = '<div class="feed-empty">⏳ Invocando artefactos...</div>';
   try {
     const res   = await fetch('/api/media');
     if (!res.ok) throw new Error();
-    const items = await res.json();
-    if (!items.length) {
-      container.innerHTML = '<div class="feed-empty">🕸️ Aún no hay artefactos en la ciudadela. ¡Sé el primero en subir algo!</div>';
+    allFeedItems = await res.json();
+    renderFeed(6);
+    renderFeedRaids();
+  } catch {
+    container.innerHTML = '<div class="feed-empty">⚠ Error al cargar el feed.</div>';
+  }
+}
+
+function renderFeed(limit) {
+  const container = document.getElementById('feed-container');
+  if (!allFeedItems.length) {
+    container.innerHTML = '<div class="feed-empty">🕸️ Aún no hay artefactos. ¡Sé el primero en subir algo!</div>';
+    return;
+  }
+  const visible = allFeedItems.slice(0, limit);
+  const hasMore = allFeedItems.length > limit;
+  container.innerHTML = visible.map(item => `
+    <div class="feed-card" data-item="${escHtml(JSON.stringify(item))}" onclick="viewMediaFromData(this)">
+      ${item.type === 'video'
+        ? `<video class="feed-thumb" src="${item.path}" muted></video>`
+        : `<img src="${item.path}" alt="${escHtml(item.caption || '')}" loading="lazy"/>`
+      }
+      <div class="feed-card-info">
+        <div class="feed-card-user">⚔ ${escHtml(item.username)}</div>
+        ${item.caption ? `<div class="feed-card-caption">${escHtml(item.caption)}</div>` : ''}
+        <div class="feed-card-date">${formatDate(item.date)}</div>
+      </div>
+    </div>
+  `).join('') + (hasMore ? `
+    <div class="feed-ver-mas">
+      <button class="btn-primary small" onclick="renderFeed(${limit + 6})">Ver más artefactos</button>
+    </div>
+  ` : '');
+}
+
+async function renderFeedRaids() {
+  const raidsFeedContainer = document.getElementById('feed-raids-container');
+  if (!raidsFeedContainer) return;
+  try {
+    const res   = await fetch('/api/raids');
+    const raids = await res.json();
+    if (!raids.length) {
+      raidsFeedContainer.innerHTML = '<div class="feed-empty">🛡 No hay raids convocadas aún.</div>';
       return;
     }
-    container.innerHTML = items.slice(0, 12).map(item => `
-      <div class="feed-card" data-item="${escHtml(JSON.stringify(item))}" onclick="viewMediaFromData(this)">
-        ${item.type === 'video'
-          ? `<video class="feed-thumb" src="${item.path}" muted></video>`
-          : `<img src="${item.path}" alt="${escHtml(item.caption || '')}" loading="lazy"/>`
-        }
-        <div class="feed-card-info">
-          <div class="feed-card-user">⚔ ${escHtml(item.username)}</div>
-          ${item.caption ? `<div class="feed-card-caption">${escHtml(item.caption)}</div>` : ''}
-          <div class="feed-card-date">${formatDate(item.date)}</div>
-        </div>
+    raidsFeedContainer.innerHTML = raids.slice(0, 4).map(r => `
+      <div class="feed-raid-card">
+        <div class="feed-raid-title">⚔ ${escHtml(r.title)}</div>
+        <div class="feed-raid-meta">👥 ${r.members.length}/${r.maxPlayers} · ${r.date ? new Date(r.date).toLocaleDateString('es-ES') : 'Sin fecha'}</div>
+        <div class="feed-raid-by">Por ${escHtml(r.createdBy)}</div>
+        ${r.description ? `<div class="feed-raid-desc">${escHtml(r.description)}</div>` : ''}
       </div>
     `).join('');
   } catch {
-    container.innerHTML = '<div class="feed-empty">⚠ Error al cargar el feed.</div>';
+    raidsFeedContainer.innerHTML = '<div class="feed-empty">⚠ Error al cargar raids.</div>';
   }
 }
 
