@@ -898,89 +898,25 @@ body {
 
 /* ─── Fondo móvil: mostrar zona derecha del wallpaper ───────── */
 @media (max-width: 768px) {
-  /* En móvil, fixed no funciona bien — usar scroll */
   body {
     background-attachment: scroll;
-    background-position: 65% center;
-  }
-  body {
-    background-position: 75% center;
-    background-attachment: scroll;
+    background-position: 55% center;
   }
 
   /* ── LOGIN SCREEN MÓVIL ── */
   #login-screen {
     align-items: center;
-    justify-content: flex-start;
-    padding-top: 0;
-    overflow-y: auto;
+    justify-content: center;
   }
 
-  /* Título "MARBELLA GDKP" arriba con margen cómodo */
   .login-container {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    background: none;
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
-    animation: none;
-    display: flex;
-    flex-direction: column;
-    min-height: 100dvh;
-  }
-
-  /* Zona del título — parte superior */
-  .login-top {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2.5rem 1.5rem 1.5rem;
-    background: linear-gradient(180deg, rgba(5,5,8,0.85) 0%, transparent 100%);
-  }
-
-  .skull-icon {
-    font-size: 2.2rem;
-    margin-bottom: 0.3rem;
-  }
-
-  .game-title {
-    font-size: 1.6rem;
-    letter-spacing: 0.1em;
-    margin-bottom: 0.2rem;
-  }
-
-  .game-subtitle {
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    margin-bottom: 0;
-    border-top: none;
-    padding-top: 0.25rem;
-  }
-
-  /* Zona del formulario — parte inferior con cristal */
-  .login-form-zone {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 1rem 1.25rem 2rem;
-    background: linear-gradient(0deg,
-      rgba(5,5,8,0.97) 0%,
-      rgba(13,10,30,0.92) 60%,
-      transparent 100%);
-    backdrop-filter: blur(2px);
-  }
-
-  /* Formularios dentro */
-  .auth-form {
-    gap: 0.65rem;
+    width: 90%;
+    max-width: 400px;
+    margin: 0 auto;
   }
 
   .game-input {
-    font-size: 1rem; /* evita zoom automático en iOS */
+    font-size: 1rem;
     padding: 0.85rem 1rem;
     border-radius: 8px;
     -webkit-appearance: none;
@@ -991,7 +927,6 @@ body {
     padding: 0.9rem;
     font-size: 0.9rem;
     border-radius: 8px;
-    letter-spacing: 0.1em;
   }
 
   .auth-links {
