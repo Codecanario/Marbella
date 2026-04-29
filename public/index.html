@@ -210,6 +210,12 @@
     <textarea class="game-input" id="raid-desc" placeholder="Descripción / estrategia..." rows="3"></textarea>
     <input class="game-input" type="datetime-local" id="raid-date"/>
     <input class="game-input" type="number" id="raid-max"   placeholder="Máx jugadores (ej: 25)" min="1" max="40"/>
+    <input class="game-input" type="number" id="raid-pot"   placeholder="Pot Total en oro (ej: 50000)" min="0"/>
+    <div class="upload-area" onclick="document.getElementById('raid-img-input').click()" style="padding:1rem">
+      <p style="margin:0;font-size:.85rem">📷 Imagen del botín (opcional)</p>
+    </div>
+    <input type="file" id="raid-img-input" accept="image/*" style="display:none" onchange="previewRaidImg(event,'raid-img-preview')"/>
+    <div id="raid-img-preview"></div>
     <button class="btn-primary" onclick="createRaid()">📜 CONVOCAR RAID</button>
     <div id="raid-error" class="error-msg"></div>
   </div>
@@ -225,6 +231,12 @@
     <textarea class="game-input" id="edit-raid-desc" placeholder="Descripción..." rows="3"></textarea>
     <input class="game-input" type="datetime-local" id="edit-raid-date"/>
     <input class="game-input" type="number" id="edit-raid-max" placeholder="Máx jugadores" min="1" max="40"/>
+    <input class="game-input" type="number" id="edit-raid-pot" placeholder="Pot Total en oro" min="0"/>
+    <div class="upload-area" onclick="document.getElementById('edit-raid-img-input').click()" style="padding:1rem">
+      <p style="margin:0;font-size:.85rem">📷 Cambiar imagen del botín (opcional)</p>
+    </div>
+    <input type="file" id="edit-raid-img-input" accept="image/*" style="display:none" onchange="previewRaidImg(event,'edit-raid-img-preview')"/>
+    <div id="edit-raid-img-preview"></div>
     <button class="btn-primary" onclick="saveEditRaid()">💾 GUARDAR</button>
     <div id="edit-raid-error" class="error-msg"></div>
   </div>

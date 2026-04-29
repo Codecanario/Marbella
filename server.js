@@ -126,11 +126,12 @@ app.get('/api/raids', requireAuth, async (req, res) => {
 });
 
 app.post('/api/raids', requireAuth, async (req, res) => {
-  const { title, description, date, maxPlayers } = req.body;
+  const { title, description, date, maxPlayers, pot, image } = req.body;
   if (!title) return res.status(400).json({ error: 'Título obligatorio' });
   const result = await db.collection('raids').insertOne({
     title, description: description || '', date: date || '',
     maxPlayers: parseInt(maxPlayers) || 25,
+    pot: pot || '', image: image || '',
     createdBy: req.session.user.username, createdAt: new Date(), members: []
   });
   const newRaid = await db.collection('raids').findOne({ _id: result.insertedId });
@@ -138,12 +139,13 @@ app.post('/api/raids', requireAuth, async (req, res) => {
 });
 
 app.put('/api/raids/:id', requireAuth, async (req, res) => {
-  const { title, description, date, maxPlayers } = req.body;
+  const { title, description, date, maxPlayers, pot, image } = req.body;
   const raid = await db.collection('raids').findOne({ _id: new ObjectId(req.params.id) });
   if (!raid) return res.status(404).json({ error: 'Raid no encontrada' });
   if (raid.createdBy !== req.session.user.username) return res.status(403).json({ error: 'Sin permiso' });
-  await db.collection('raids').updateOne({ _id: new ObjectId(req.params.id) },
-    { $set: { title, description, date, maxPlayers: parseInt(maxPlayers) || raid.maxPlayers } });
+  const update = { title, description, date, maxPlayers: parseInt(maxPlayers) || raid.maxPlayers, pot: pot || raid.pot || '' };
+  if (image) update.image = image;
+  await db.collection('raids').updateOne({ _id: new ObjectId(req.params.id) }, { $set: update });
   res.json({ ok: true });
 });
 

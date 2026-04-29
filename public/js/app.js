@@ -278,29 +278,32 @@ async function loadRaids() {
 }
 
 function buildRaidCard(r) {
-  const isMember  = r.members.includes(currentUser.username);
-  const isOwner   = r.createdBy === currentUser.username;
-  const full      = r.members.length >= r.maxPlayers;
-  const dateStr   = r.date ? new Date(r.date).toLocaleString('es-ES') : 'Sin fecha';
+  const isMember = r.members.includes(currentUser.username);
+  const isOwner  = r.createdBy === currentUser.username;
+  const full     = r.members.length >= r.maxPlayers;
+  const dateStr  = r.date ? new Date(r.date).toLocaleString('es-ES') : 'Sin fecha';
+  const id       = escHtml(r.id || r._id);
 
   return `
-    <div class="raid-card" id="raid-${r.id}">
+    <div class="raid-card" id="raid-${id}">
+      ${r.image ? `<img src="${r.image}" class="raid-image" alt="Imagen raid"/>` : ''}
       <div class="raid-title">⚔ ${escHtml(r.title)}</div>
       ${r.description ? `<div class="raid-desc">${escHtml(r.description)}</div>` : ''}
       <div class="raid-meta">
         <span>📅 ${dateStr}</span>
         <span>👥 ${r.members.length}/${r.maxPlayers}</span>
       </div>
+      ${r.pot ? `<div class="raid-pot">💰 Pot Total: <span>${Number(r.pot).toLocaleString('es-ES')}g 🪙</span></div>` : ''}
       <div class="raid-members">
         Creada por: <span style="color:var(--green-nec)">${escHtml(r.createdBy)}</span>
       </div>
       ${r.members.length ? `<div class="raid-members-list">Miembros: ${r.members.map(m => escHtml(m)).join(', ')}</div>` : ''}
       <div class="raid-actions">
-        ${!isMember && !full ? `<button class="btn-raid join"  onclick="joinRaid(${r.id})">+ Apuntarse</button>` : ''}
-        ${isMember           ? `<button class="btn-raid leave" onclick="leaveRaid(${r.id})">✕ Salir</button>` : ''}
+        ${!isMember && !full ? `<button class="btn-raid join"  onclick="joinRaid('${id}')">+ Apuntarse</button>` : ''}
+        ${isMember           ? `<button class="btn-raid leave" onclick="leaveRaid('${id}')">✕ Salir</button>` : ''}
         ${full && !isMember  ? `<span style="color:var(--text-dim);font-size:.8rem">🔒 Completa</span>` : ''}
-        ${isOwner            ? `<button class="btn-raid edit"   onclick="openEditRaid(${r.id})">✏ Editar</button>` : ''}
-        ${isOwner            ? `<button class="btn-raid delete" onclick="deleteRaid(${r.id})">🗑 Eliminar</button>` : ''}
+        ${isOwner            ? `<button class="btn-raid edit"   onclick="openEditRaid('${id}')">✏ Editar</button>` : ''}
+        ${isOwner            ? `<button class="btn-raid delete" onclick="deleteRaid('${id}')">🗑 Eliminar</button>` : ''}
       </div>
     </div>
   `;
@@ -311,16 +314,29 @@ async function createRaid() {
   const desc       = document.getElementById('raid-desc').value.trim();
   const date       = document.getElementById('raid-date').value;
   const maxPlayers = document.getElementById('raid-max').value;
+  const pot        = document.getElementById('raid-pot').value;
+  const imgInput   = document.getElementById('raid-img-input');
   const errEl      = document.getElementById('raid-error');
   errEl.textContent = '';
 
   if (!title) { errEl.textContent = '⚠ El nombre es obligatorio.'; return; }
 
   try {
+    // Subir imagen si existe
+    let imageUrl = '';
+    if (imgInput.files.length) {
+      const fd = new FormData();
+      fd.append('file', imgInput.files[0]);
+      fd.append('caption', 'raid-botin');
+      const imgRes  = await fetch('/api/media/upload', { method: 'POST', body: fd });
+      const imgData = await imgRes.json();
+      if (imgRes.ok) imageUrl = imgData.path;
+    }
+
     const res = await fetch('/api/raids', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description: desc, date, maxPlayers })
+      body: JSON.stringify({ title, description: desc, date, maxPlayers, pot, image: imageUrl })
     });
     if (!res.ok) { const d = await res.json(); errEl.textContent = '⚠ ' + d.error; return; }
     closeModal('modal-create-raid');
@@ -333,23 +349,37 @@ async function createRaid() {
 }
 
 function clearRaidForm() {
-  ['raid-title','raid-desc','raid-date','raid-max'].forEach(id => {
+  ['raid-title','raid-desc','raid-date','raid-max','raid-pot'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  document.getElementById('raid-img-input').value = '';
+  document.getElementById('raid-img-preview').innerHTML = '';
+}
+
+function previewRaidImg(event, previewId) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const url     = URL.createObjectURL(file);
+  const preview = document.getElementById(previewId);
+  preview.innerHTML = `<img src="${url}" style="width:100%;max-height:150px;object-fit:cover;border-radius:4px;margin-top:.5rem"/>`;
 }
 
 function openEditRaid(id) {
   fetch('/api/raids')
     .then(r => r.json())
     .then(raids => {
-      const raid = raids.find(r => r.id === id);
+      const raid = raids.find(r => (r.id || r._id) === id);
       if (!raid) return;
-      document.getElementById('edit-raid-id').value    = raid.id;
+      document.getElementById('edit-raid-id').value    = id;
       document.getElementById('edit-raid-title').value = raid.title;
       document.getElementById('edit-raid-desc').value  = raid.description;
       document.getElementById('edit-raid-date').value  = raid.date || '';
       document.getElementById('edit-raid-max').value   = raid.maxPlayers;
+      document.getElementById('edit-raid-pot').value   = raid.pot || '';
+      document.getElementById('edit-raid-img-preview').innerHTML = raid.image
+        ? `<img src="${raid.image}" style="width:100%;max-height:150px;object-fit:cover;border-radius:4px;margin-top:.5rem"/>`
+        : '';
       openModal('modal-edit-raid');
     });
 }
@@ -360,16 +390,31 @@ async function saveEditRaid() {
   const desc       = document.getElementById('edit-raid-desc').value.trim();
   const date       = document.getElementById('edit-raid-date').value;
   const maxPlayers = document.getElementById('edit-raid-max').value;
+  const pot        = document.getElementById('edit-raid-pot').value;
+  const imgInput   = document.getElementById('edit-raid-img-input');
   const errEl      = document.getElementById('edit-raid-error');
   errEl.textContent = '';
 
   if (!title) { errEl.textContent = '⚠ El nombre es obligatorio.'; return; }
 
   try {
+    let imageUrl = '';
+    if (imgInput.files.length) {
+      const fd = new FormData();
+      fd.append('file', imgInput.files[0]);
+      fd.append('caption', 'raid-botin');
+      const imgRes  = await fetch('/api/media/upload', { method: 'POST', body: fd });
+      const imgData = await imgRes.json();
+      if (imgRes.ok) imageUrl = imgData.path;
+    }
+
+    const body = { title, description: desc, date, maxPlayers, pot };
+    if (imageUrl) body.image = imageUrl;
+
     const res = await fetch(`/api/raids/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description: desc, date, maxPlayers })
+      body: JSON.stringify(body)
     });
     if (!res.ok) { const d = await res.json(); errEl.textContent = '⚠ ' + d.error; return; }
     closeModal('modal-edit-raid');
