@@ -28,14 +28,19 @@
   <div class="particles" id="particles"></div>
 
   <div class="login-container">
-    <div class="skull-icon">☠</div>
-    <h1 class="game-title">MARBELLA GDKP</h1>
-    <p class="game-subtitle">Foro de la Ciudadela Flotante</p>
+
+    <!-- LOGO -->
+    <div class="login-top">
+      <img src="/assets/logo.png" alt="Marbella GDKP" class="login-logo"/>
+    </div>
+
+    <!-- ZONA INFERIOR: formularios -->
+    <div class="login-form-zone">
 
     <!-- FORMULARIO LOGIN -->
     <div id="form-login" class="auth-form active">
-      <input class="game-input" type="text"     id="login-user" placeholder="Nick de Aventurero"/>
-      <input class="game-input" type="password" id="login-pass" placeholder="Contraseña Secreta"/>
+      <input class="game-input" type="text"     id="login-user" placeholder="Nick de Aventurero" autocomplete="username"/>
+      <input class="game-input" type="password" id="login-pass" placeholder="Contraseña Secreta" autocomplete="current-password"/>
       <button class="btn-primary" onclick="doLogin()">⚔ ENTRAR AL ABISMO</button>
       <div class="auth-links">
         <span onclick="showForm('form-register')">Crear cuenta</span>
@@ -47,9 +52,9 @@
     <!-- FORMULARIO REGISTRO -->
     <div id="form-register" class="auth-form">
       <h3 class="form-title">NUEVA ALMA</h3>
-      <input class="game-input" type="text"     id="reg-user"  placeholder="Nick único"/>
-      <input class="game-input" type="password" id="reg-pass"  placeholder="Contraseña"/>
-      <input class="game-input" type="password" id="reg-pass2" placeholder="Confirmar contraseña"/>
+      <input class="game-input" type="text"     id="reg-user"  placeholder="Nick único" autocomplete="username"/>
+      <input class="game-input" type="password" id="reg-pass"  placeholder="Contraseña" autocomplete="new-password"/>
+      <input class="game-input" type="password" id="reg-pass2" placeholder="Confirmar contraseña" autocomplete="new-password"/>
       <button class="btn-primary" onclick="doRegister()">📜 CREAR PERSONAJE</button>
       <div class="auth-links"><span onclick="showForm('form-login')">← Volver al login</span></div>
       <div id="reg-error" class="error-msg"></div>
@@ -58,13 +63,15 @@
     <!-- FORMULARIO RECUPERAR -->
     <div id="form-recover" class="auth-form">
       <h3 class="form-title">RECUPERAR ALMA</h3>
-      <input class="game-input" type="text"     id="rec-user"  placeholder="Tu nick"/>
-      <input class="game-input" type="password" id="rec-pass"  placeholder="Nueva contraseña"/>
-      <input class="game-input" type="password" id="rec-pass2" placeholder="Confirmar nueva contraseña"/>
+      <input class="game-input" type="text"     id="rec-user"  placeholder="Tu nick" autocomplete="username"/>
+      <input class="game-input" type="password" id="rec-pass"  placeholder="Nueva contraseña" autocomplete="new-password"/>
+      <input class="game-input" type="password" id="rec-pass2" placeholder="Confirmar nueva contraseña" autocomplete="new-password"/>
       <button class="btn-primary" onclick="doRecover()">🔮 RESTABLECER</button>
       <div class="auth-links"><span onclick="showForm('form-login')">← Volver al login</span></div>
       <div id="rec-error" class="error-msg"></div>
     </div>
+
+    </div><!-- /login-form-zone -->
   </div>
 </div>
 
@@ -75,8 +82,7 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-brand">
-      <span class="skull-sm">☠</span>
-      <span>MARBELLA GDKP</span>
+      <img src="/assets/logo.png" alt="Marbella GDKP" class="nav-logo"/>
     </div>
     <div class="nav-links">
       <a href="#" onclick="showSection('inicio')"        class="nav-link active" data-section="inicio">⚔ Inicio</a>

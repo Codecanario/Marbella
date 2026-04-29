@@ -245,40 +245,16 @@ body {
   to   { transform: translateY(0)    scale(1);    opacity: 1; }
 }
 
-.skull-icon {
-  font-size: 3rem;
+.login-logo {
+  width: 260px;
+  max-width: 100%;
   display: block;
-  margin-bottom: 0.5rem;
-  filter: drop-shadow(0 0 12px var(--green-nec));
-  animation: pulse 3s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,100% { filter: drop-shadow(0 0 12px var(--green-nec)); }
-  50%      { filter: drop-shadow(0 0 24px var(--green-nec)); }
+  margin: 0 auto 1.2rem auto;
+  filter: drop-shadow(0 0 18px rgba(155,93,229,0.5)) drop-shadow(0 0 35px rgba(57,255,20,0.15));
 }
 
-.game-title {
-  font-family: var(--font-title);
-  font-size: 2rem;
-  font-weight: 900;
-  letter-spacing: 0.15em;
-  background: linear-gradient(135deg, var(--gold-bright), var(--purple-bright), var(--gold));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-  margin-bottom: 0.25rem;
-}
-.game-subtitle {
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  margin-bottom: 1.5rem;
-  border-top: 1px solid var(--border);
-  padding-top: 0.75rem;
-}
+/* Ocultar elementos viejos por si quedan */
+.skull-icon, .game-title, .game-subtitle { display: none; }
 
 /* FORMULARIOS AUTH */
 .auth-form { display: none; flex-direction: column; gap: 0.75rem; }
@@ -391,7 +367,13 @@ body {
   background-clip: text;
   white-space: nowrap;
 }
-.skull-sm { font-size: 1.2rem; filter: drop-shadow(0 0 6px var(--green-nec)); -webkit-text-fill-color: initial; }
+.nav-logo {
+  height: 36px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 0 8px rgba(155,93,229,0.4));
+}
+.skull-sm { display: none; }
 
 .nav-links {
   display: flex;
