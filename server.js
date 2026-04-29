@@ -12,6 +12,12 @@ const path    = require('path');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+// ─── Crear carpetas necesarias si no existen ─────────────────────────────────
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+const DATA_DIR_PATH = path.join(__dirname, 'data');
+if (!fs.existsSync(UPLOADS_DIR))   fs.mkdirSync(UPLOADS_DIR,   { recursive: true });
+if (!fs.existsSync(DATA_DIR_PATH)) fs.mkdirSync(DATA_DIR_PATH, { recursive: true });
+
 // ─── Rutas a archivos JSON ────────────────────────────────────────────────────
 const DATA_DIR   = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
