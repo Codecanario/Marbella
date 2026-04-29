@@ -1138,22 +1138,23 @@ body {
    ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 480px) {
 
-  /* Fondo: centrar en la parte derecha épica de la imagen */
+  /* Fondo: un poco más a la izquierda */
   body {
-    background-position: 70% center;
+    background-position: 55% center;
     background-attachment: scroll;
   }
 
-  /* Pantalla login: columna, título arriba, formulario centrado */
+  /* Pantalla login: sin scroll, todo cabe en pantalla */
   #login-screen {
     align-items: center;
-    justify-content: flex-start;
-    padding-top: 2.5rem;
-    padding-bottom: 2rem;
-    overflow-y: auto;
+    justify-content: center;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh; /* dynamic viewport height para móviles */
   }
 
-  /* Título MARBELLA GDKP arriba con margen */
+  /* Título arriba con margen */
   .game-title {
     font-size: 1.4rem;
     letter-spacing: 0.08em;
@@ -1167,39 +1168,32 @@ body {
   }
 
   .skull-icon {
-    font-size: 2.2rem;
+    font-size: 2rem;
     margin-bottom: 0.3rem;
   }
 
-  /* Caja login: compacta, centrada, no ocupa toda la pantalla */
+  /* Caja login: compacta y centrada */
   .login-container {
     width: 88%;
     max-width: 340px;
-    padding: 1.5rem 1.25rem;
+    padding: 1.25rem 1.1rem;
     margin: 0 auto;
     border-radius: 12px;
-    box-shadow:
-      0 0 40px rgba(155,93,229,0.25),
-      0 0 80px rgba(57,255,20,0.06),
-      inset 0 1px 0 rgba(155,93,229,0.2);
   }
 
-  /* Inputs más cómodos para móvil */
+  /* Inputs sin zoom en iOS */
   .game-input {
-    padding: 0.75rem 0.9rem;
-    font-size: 1rem; /* evita zoom automático en iOS */
+    padding: 0.7rem 0.9rem;
+    font-size: 1rem;
     border-radius: 6px;
   }
 
-  /* Botón principal */
   .btn-primary {
-    padding: 0.8rem;
+    padding: 0.75rem;
     font-size: 0.82rem;
     letter-spacing: 0.08em;
-    border-radius: 6px;
   }
 
-  /* Links auth */
   .auth-links {
     font-size: 0.78rem;
     flex-direction: column;
@@ -1207,13 +1201,13 @@ body {
     gap: 0.4rem;
   }
 
-  /* Niebla — más visible en móvil */
+  /* Niebla: igual que en web, solo en la parte inferior */
   #fog-container {
-    height: 160px;
+    height: 180px;
+    border-radius: 0;
   }
 
-  .fog-layer:nth-child(1) { height: 120px; }
-  .fog-layer:nth-child(2) { height: 150px; }
-  .fog-layer:nth-child(3) { height: 90px;  }
-  .fog-layer:nth-child(4) { height: 130px; }
+  .fog-layer {
+    border-radius: 0;
+  }
 }
