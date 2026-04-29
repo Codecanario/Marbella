@@ -1180,6 +1180,12 @@ body {
     height: 100dvh;
   }
 
+  .skull-icon {
+    font-size: 2rem;
+    margin-bottom: 0.4rem;
+    animation: none !important;
+  }
+
   .game-title {
     font-size: 1.4rem;
     letter-spacing: 0.08em;
@@ -1189,13 +1195,7 @@ body {
   .game-subtitle {
     font-size: 0.65rem;
     letter-spacing: 0.15em;
-    margin-bottom: 1rem;
-  }
-
-  .skull-icon {
-    font-size: 2rem;
-    margin-bottom: 0.3rem;
-    animation: none !important; /* quitar pulso en móvil */
+    margin-bottom: 1.8rem; /* más espacio entre título y formulario */
   }
 
   .login-container {
