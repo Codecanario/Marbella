@@ -1170,27 +1170,26 @@ body {
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Pantalla login: centrado real en móvil */
+  /* Pantalla login: centrado absoluto en móvil */
   #login-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+    position: fixed;
+    inset: 0;
     overflow: hidden;
     height: 100vh;
     height: 100dvh;
   }
 
   .login-container {
-    width: 88%;
-    max-width: 340px;
-    padding: 1.25rem 1.1rem;
-    margin: 0 auto;
-    border-radius: 12px;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 88% !important;
+    max-width: 340px !important;
+    padding: 1.25rem 1.1rem !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
     animation: none !important;
-    transform: none !important;
-    position: static !important;
   }
 
   .skull-icon {
