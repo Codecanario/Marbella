@@ -5,6 +5,7 @@
 
 const express    = require('express');
 const session    = require('express-session');
+const MongoStore = require('connect-mongo');
 const multer     = require('multer');
 const fs         = require('fs');
 const path       = require('path');
@@ -50,7 +51,8 @@ app.use(session({
   secret: 'marbella-gdkp-secret-666',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 24 * 60 * 60 * 1000 }
+  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, dbName: 'marbella' }),
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 7 días
 }));
 
 const requireAuth = (req, res, next) => {
