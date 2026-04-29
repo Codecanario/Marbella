@@ -4,8 +4,9 @@
   "description": "Foro estilo WoW Classic - Naxxramas",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
-  },
+  "start": "node server.js",
+  "build": "npm install"
+},
   "dependencies": {
     "express": "^4.18.2",
     "express-session": "^1.17.3",
